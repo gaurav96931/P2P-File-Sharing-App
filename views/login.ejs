@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="w-25 border border-3 p-3">
+    <h1 class="mb-3 text-center">Login</h1>
+    <!-- Makes POST request to /login route -->
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" name="username" id="username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password">
+      </div>
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-dark mt-3">Login</button>
+        <a href="/" class="btn btn-primary mt-3">Home</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<%- include('partials/footer') %>
