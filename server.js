@@ -64,7 +64,6 @@ app.get('/api/files/:fileid', async (req, res) => {
 
 // route to login a user
 app.post('/api/user', async (req, res) => {
-  // console.log(req);
   const { username, password } = req.body.auth;
   const clientip = req.body.clientip;
 
@@ -105,15 +104,6 @@ app.post('/api/user', async (req, res) => {
     console.error(err);
     res.sendStatus(500);
   }
-  // db.query('INSERT INTO active_users (username, clientip) VALUES ($1, $2) RETURNING *', [username, clientip], (err, res) => {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     console.log(`New user active, Username: ${username}, IP Address: ${clientip}`);
-  //   }
-  // });
-
-  // res.json({ message: `Received name: ${username}, age: ${clientip}` });
 });
 
 app.post('/api/newuser', async (req, res) => {
@@ -162,14 +152,6 @@ app.delete('/api/activeuser/:id', async (req, res) => {
     console.error('Error in deleting user');
     console.log(err);
     res.sendStatus(500);
-  }
-});
-
-// General Error Handling
-app.use((err, req, res, next) => {
-  if (err) {
-    console.error(err.stack);
-    res.status(500).send('Something went wrong!');
   }
 });
 
