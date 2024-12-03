@@ -30,7 +30,7 @@
             <ul class="list-group list-group-flush">
 
                 <% result.forEach(element => { %>
-                <li class="list-group-item d-flex flex-row justify-content-around">
+                <li class="list-group-item d-flex flex-row justify-content-between">
                     <h4><%= element.filename %></h4>
                     <a href="/download/<%= element.fileid %>" class="btn btn-dark">Download</a>
                 </li>

@@ -55,7 +55,7 @@ app.get('/api/files/:fileid', async (req, res) => {
     const response2 = await db.query('SELECT filename FROM files WHERE fileid = $1', [fileid]);
     const userip = response.rows[0].clientip;
     const filename = response2.rows[0].filename;
-    res.send({ ipPeerToConnect: userip, filename });
+    res.redirect(`http://${userip}:${5000}/files/${filename}`);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

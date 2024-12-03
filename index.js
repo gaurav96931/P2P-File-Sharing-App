@@ -19,6 +19,7 @@ const port = process.env.CLIENT_PORT | 3000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = 'uploads';
 const downloadDir = 'downloads';
+const serverAddr = process.env.SERVER_URL;
 // Express App Initialization
 const app = express();
 // to store the ipv4 address of system
@@ -55,7 +56,7 @@ const db = new pg.Client({
 db.connect();
 
 const api = axios.create({
-  baseURL: process.env.SERVER_URL
+  baseURL: serverAddr
 });
 
 // Multer Setup for File Uploads
@@ -138,20 +139,24 @@ app.post(
 
 // logout route
 app.post('/logout', (req, res, next) => {
-  const id = req.user.id;
-  req.logout(async function (err) {
-    if (err) return next(err);
-    // for logout delete activeuser from server
-    try {
-      await api.delete(`/api/activeuser/${id}`);
-      console.log('Logged out successfully');
-      res.redirect('/');
-    } catch (error) {
-      errormsg = 'Error in logging out';
-      console.error(errormsg, error);
-      res.redirect('/client');
-    }
-  });
+  if (req.isAuthenticated()) {
+    const id = req.user.id;
+    req.logout(async function (err) {
+      if (err) return next(err);
+      // for logout delete activeuser from server
+      try {
+        await api.delete(`/api/activeuser/${id}`);
+        console.log('Logged out successfully');
+        res.redirect('/');
+      } catch (error) {
+        errormsg = 'Error in logging out';
+        console.error(errormsg, error);
+        res.redirect('/');
+      }
+    });
+  } else {
+    res.redirect('/');
+  }
 });
 
 // register route
@@ -208,24 +213,7 @@ app.get('/download/:fileid', async (req, res) => {
   if (req.isAuthenticated()) {
     try {
       const fileid = req.params.fileid;
-      const response = await api.get(`/api/files/${fileid}`);
-      const { ipPeerToConnect, filename } = response.data;
-      const filepath = path.join(__dirname, downloadDir, filename);
-      const writer = fs.createWriteStream(filepath);
-      axios({
-        method: 'get',
-        url: `http://${ipPeerToConnect}:${5000}/files/${filename}`,
-        responseType: 'stream'
-      }).then((response) => {
-        response.data.pipe(writer);
-      });
-      writer.on('finish', () => {
-        message = `File ${filename} downloaded successfully.`;
-        console.log(message);
-      });
-      writer.on('error', (err) => {
-        throw err;
-      });
+      res.redirect(serverAddr + `/api/files/${fileid}`);
     } catch (err) {
       errormsg = 'Error in getting file';
       console.log(errormsg, err);
@@ -233,14 +221,13 @@ app.get('/download/:fileid', async (req, res) => {
   } else {
     res.redirect('/login');
   }
-  res.redirect('/client');
 });
 
 app.get('/files/:filename', (req, res) => {
   const fileName = req.params.filename;
   const filePath = path.join(__dirname, uploadDir, fileName);
   if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
+    res.download(filePath);
   } else {
     console.error(`Requested file ${fileName} does not exist`);
     res.sendStatus(404);
