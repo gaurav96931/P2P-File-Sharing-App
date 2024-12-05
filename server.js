@@ -86,10 +86,10 @@ app.post('/api/user', async (req, res) => {
           //   // user already logged in
           //   res.sendStatus(409);
           // } else {
-            // store as active user
-            const response = await db.query('INSERT INTO active_users (username, clientip) VALUES ($1, $2) RETURNING *', [username, clientip]);
-            res.status(200).send(response.rows[0]);
-            console.log(`New user active, Username: ${username}, IP Address: ${clientip}`);
+          // store as active user
+          const response = await db.query('INSERT INTO active_users (username, clientip) VALUES ($1, $2) RETURNING *', [username, clientip]);
+          res.status(200).send(response.rows[0]);
+          console.log(`New user active, Username: ${username}, IP Address: ${clientip}`);
           // }
         } else {
           // authentication failed

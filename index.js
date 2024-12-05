@@ -82,11 +82,11 @@ if (!fs.existsSync(downloadDir)) {
 
 // EJS files serving routes
 app.get('/', (req, res) => {
-  res.render('home.ejs');
+  res.render('home.ejs', { errormsg, message });
 });
 
 app.get('/login', (req, res) => {
-  res.render('login.ejs', { errormsg });
+  res.render('login.ejs', { errormsg, message });
   errormsg = null;
 });
 
@@ -145,7 +145,7 @@ app.post('/logout', (req, res, next) => {
       if (err) return next(err);
       // for logout delete activeuser from server
       try {
-        await api.delete(`/api/activeuser/${id}`);
+        await api.delete(serverAddr + `/api/activeuser/${id}`);
         console.log('Logged out successfully');
         res.redirect('/');
       } catch (error) {
@@ -169,7 +169,7 @@ app.post('/register', async (req, res) => {
     await api.post('/api/newuser', { username, password });
     console.log('New user regsitered: ', username);
     message = 'Registered successfully';
-    res.redirect('/register');
+    res.redirect('/login');
   } catch (err) {
     if (err.status === 409) {
       // username already exists error
